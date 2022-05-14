@@ -1,0 +1,20 @@
+{
+    "manifest_version": 3,
+    "name": "DLsitePlay_Addon",
+    "version": "0.0.1",
+    "description": "DLsitePlayに追加機能を追加します",
+    "icons": {
+    },
+    "permissions": [
+        "storage"
+    ],
+    "content_scripts": [
+        {
+            "matches": ["*://play.dlsite.com/*"],
+            "all_frames": true,
+            "js": ["main.js"],
+            "css": ["main.css"],
+            "run_at": "document_end"
+        }
+    ]
+}
