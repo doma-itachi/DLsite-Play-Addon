@@ -16,51 +16,135 @@ let observer=new MutationObserver(()=>{
         if(dbgMode)console.log("URLが切り替わりました");
 
         let nowScr=getCurrentScreen(location.hash);
-        
+
         //view画面
         let jump=()=>{
             if(document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz")!=null &&
             document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV")!=null){
                 // let currentPage;
 
-                if(dbgMode)
-                    console.log(document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent+", "+document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV").textContent);
+                let id=getID(location.hash);
+                chrome.storage.local.get(id,(e)=>{
+                    if(Object.keys(e).length!=0){
+                        if(dbgMode)
+                            console.log(document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent+", "+document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV").textContent);
 
-                currentPage=parseInt(document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent);
-                let targetPage=20;
-                for(let i=currentPage;i<targetPage;i++){
-                    document.querySelector(".ImageViewer_imageViewer__wap0J").click();
-                }
+                        currentPage=parseInt(document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent);
+                        let targetPage=1;
+                        targetPage=e[id].PageCount;
+                        for(let i=currentPage;i<targetPage;i++){
+                            document.querySelector(".ImageViewer_imageViewer__wap0J").click();
+                        }
+                    }
+                })
+                
+
+                //ページ保存ボタンをDOMに埋め込む
+                // setTimeout(()=>{
+                //     console.log("実行されました");document.querySelectorAll(".ImageViewer_imageViewer__wap0J>div>div>div")[1].insertAdjacentHTML("afterend", '<div class="PlayAddonSaveBtn">進み具合を保存</div>');
+                // }, 3000);
+                // setTimeout(()=>{
+                //     // document.querySelector("body").insertAdjacentHTML("afterend", '<div class="PlayAddonSaveBtn">進み具合を保存</div>')
+                //     // console.log("実行されました");document.querySelector("body").innerHTML+=`<div class="PlayAddonSaveBtn">進み具合を保存</div>`;
+                // }, 15000);
             }
             else {console.log("まだ");setTimeout(jump, 100);}
         };
         if(nowScr==screen.view)jump();
     }
+
+    //tree画面
+    if(getCurrentScreen(location.hash)){
+        let items=document.querySelectorAll(".WorkTreeList_tree__SAoFl>li");
+        if(items.length!=0){
+            let getFileType=(info)=>{
+                let i=info.indexOf(" - ");
+                if(i==-1)return "フォルダ";
+                else return info.slice(0,i);
+            };
+
+            // chrome.storage.local.get(getID(hash), ()=>{
+
+            // })
+
+            items.forEach(e => {
+                if(e.classList.contains("modded")==false){
+                    let fileName=e.querySelector(".WorkTreeList_filename__Hbpch").textContent;
+                    let fileType=getFileType(e.querySelector(".WorkTreeList_info__oaT-v").textContent);
+                    if(dbgMode){
+                        console.log(fileName+","+fileType);
+                    }
+                    if(fileType=="PDFファイル"){
+                        e.querySelector(".WorkTreeList_info__oaT-v").insertAdjacentHTML("beforebegin",`
+                        <div class="addonShowState">
+                            <div class="addonReadState"><div>読書中</div></div>
+                            <div class="addonReadPercent">49%</div>
+                        </div>
+                        `);
+                    }
+
+                    e.classList.add("modded");
+                }
+            });
+        }
+    }
+
+
+    //メニューが開かれたらボタンを表示する
     if(getCurrentScreen(location.hash)==screen.view &&
         document.querySelector(".ImageViewer_imageViewer__wap0J>div>div")!=null &&
         document.querySelector(".ImageViewer_imageViewer__wap0J>div>div").childNodes.length!=0&&
-        document.querySelector(".PlayAddonFlags")==null){
+        document.querySelector(".PlayAddonSaveBtn")==null){
             
         if(dbgMode)console.log("メニューが開かれました");
-        setTimeout(()=>{
-            document.querySelector(".ImageViewer_imageViewer__wap0J>div>div>div").innerHTML+=`<div class="PlayAddonFlags"></div>`
-            // document.querySelector("#root").innerHTML+=`<div class="PlayAddonSavePage">
-            // 進み具合を保存<div>`;
-        },2000);
-            
+        document.querySelectorAll(".ImageViewer_imageViewer__wap0J>div>div>div")[1].insertAdjacentHTML("afterend", 
+        '<div class="PlayAddonSaveBtn ImageViewerControls_bottomButtons__8YPeD"><img src="'+chrome.runtime.getURL("res/icon_AddBookmark.svg")+'"></img><div>進み具合を保存</div></div>');
+
+        //イベントリスナ
+        document.querySelector(".PlayAddonSaveBtn").addEventListener("touchend", ()=>{
+            if(dbgMode){console.log("進み具合が保存されます。 ページ数;"+document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV").textContent+", ページ:"+document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent);
+            console.log(getID(location.hash)+","+getFileName(location.hash));}
+            chrome.storage.local.set({[getID(location.hash)]:{
+                FileName:getFileName(location.hash),
+                ReadState:readState.reading,
+                PageCount:parseInt(document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent),
+                TotalPage:parseInt(document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV").textContent)
+            }});
+            if(dbgMode)chrome.storage.local.get(getID(location.hash), (e)=>{console.log(e);});
+        });
     }
 });
 observer.observe(document.querySelector("body"), {childList:true, subtree:true});
 
+let readState={
+    unread:0,
+    reading:1,
+    readed:2
+}
 let screen={
     library:0,
     tree:1,
     view:2
 }
-function getCurrentScreen(hash){
+
+function getHashArr(hash){
     hash=hash.slice(2, hash.length);
-    let hashArr=hash.split("/");
-    // if(dbgMode)console.log(hashArr[0]+","+hashArr[2]);
+    return hash.split("/");
+}
+function getID(hash){
+    let hashArr=getHashArr(hash);
+    return hashArr[1];
+}
+function getFileName(hash){
+    let hashArr=getHashArr(hash);
+    let viewMeta=hashArr[3].split("%2F");
+    return decodeURI(viewMeta[viewMeta.length-1]);
+}
+function getCurrentScreen(hash){
+    let hashArr=getHashArr(hash);
+    // hash=hash.slice(2, hash.length);
+    // let hashArr=hash.split("/");
+    if(dbgMode)console.log(hashArr[0]+","+hashArr[2]);
     
     switch(hashArr[0]){
         case "library":
@@ -83,16 +167,4 @@ function getCurrentScreen(hash){
             return null;
             break;
     }
-    return null;
 }
-
-// setTimeout(() => {
-    
-//     let currentPage;
-//     currentPage=parseInt(document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent);
-
-//     let targetPage=0;
-//     for(let i=0;i<30;i++){
-//     document.querySelector(".ImageViewer_imageViewer__wap0J").click();
-//     }
-// }, 5000);

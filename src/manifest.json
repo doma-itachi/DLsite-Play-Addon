@@ -6,7 +6,8 @@
     "icons": {
     },
     "permissions": [
-        "storage"
+        "storage",
+        "unlimitedStorage"
     ],
     "content_scripts": [
         {
@@ -15,6 +16,12 @@
             "js": ["main.js"],
             "css": ["main.css"],
             "run_at": "document_end"
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": ["res/icon_AddBookmark.svg"],
+            "matches": ["*://play.dlsite.com/*"]
         }
     ]
 }
