@@ -63,28 +63,29 @@ let observer=new MutationObserver(()=>{
                 else return info.slice(0,i);
             };
 
-            // chrome.storage.local.get(getID(hash), ()=>{
+            chrome.storage.local.get(getID(location.hash), ()=>{
+                items.forEach(e => {
+                    if(e.classList.contains("modded")==false){
+                        let fileName=e.querySelector(".WorkTreeList_filename__Hbpch").textContent;
+                        let fileType=getFileType(e.querySelector(".WorkTreeList_info__oaT-v").textContent);
+                        if(dbgMode){
+                            console.log(fileName+","+fileType);
+                        }
+                        if(fileType=="PDFファイル"){
 
-            // })
+                            let state;
+                            let percent;
 
-            items.forEach(e => {
-                if(e.classList.contains("modded")==false){
-                    let fileName=e.querySelector(".WorkTreeList_filename__Hbpch").textContent;
-                    let fileType=getFileType(e.querySelector(".WorkTreeList_info__oaT-v").textContent);
-                    if(dbgMode){
-                        console.log(fileName+","+fileType);
+                            e.querySelector(".WorkTreeList_info__oaT-v").insertAdjacentHTML("beforebegin",`
+                            <div class="addonShowState">
+                                <div class="addonReadState"><div>読書中</div></div>
+                                <div class="addonReadPercent">49%</div>
+                            </div>`);
+                        }
+    
+                        e.classList.add("modded");
                     }
-                    if(fileType=="PDFファイル"){
-                        e.querySelector(".WorkTreeList_info__oaT-v").insertAdjacentHTML("beforebegin",`
-                        <div class="addonShowState">
-                            <div class="addonReadState"><div>読書中</div></div>
-                            <div class="addonReadPercent">49%</div>
-                        </div>
-                        `);
-                    }
-
-                    e.classList.add("modded");
-                }
+                });
             });
         }
     }
@@ -106,6 +107,7 @@ let observer=new MutationObserver(()=>{
             console.log(getID(location.hash)+","+getFileName(location.hash));}
             chrome.storage.local.set({[getID(location.hash)]:{
                 FileName:getFileName(location.hash),
+                ParentDir:getParentDir(location.hash),
                 ReadState:readState.reading,
                 PageCount:parseInt(document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent),
                 TotalPage:parseInt(document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV").textContent)
@@ -140,6 +142,11 @@ function getFileName(hash){
     let viewMeta=hashArr[3].split("%2F");
     return decodeURI(viewMeta[viewMeta.length-1]);
 }
+function getParentDir(hash){
+    let hashArr=getHashArr(hash);
+    let viewMeta=hashArr[3].split("%2F");
+    return decodeURI(viewMeta[viewMeta.length-2]);
+}
 function getCurrentScreen(hash){
     let hashArr=getHashArr(hash);
     // hash=hash.slice(2, hash.length);
@@ -167,4 +174,8 @@ function getCurrentScreen(hash){
             return null;
             break;
     }
+}
+
+class StorageMgr{
+    
 }
