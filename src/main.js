@@ -24,6 +24,7 @@ let observer=new MutationObserver(()=>{
                 // let currentPage;
 
                 let id=getID(location.hash);
+                
                 chrome.storage.local.get(id,(e)=>{
                     if(Object.keys(e).length!=0){
                         if(dbgMode)
@@ -31,7 +32,15 @@ let observer=new MutationObserver(()=>{
 
                         currentPage=parseInt(document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent);
                         let targetPage=1;
-                        targetPage=e[id].PageCount;
+                        let fileName=getFileName(location.hash);
+                        for(let i=0;i<e[id][0].length;i++){
+                            console.log(e[id][0][i].fileName+","+fileName);
+                            if(e[id][0][i].fileName==fileName){
+                                targetPage=e[id][0][i].PageCount;
+                                break;
+                            }
+                        }
+                        
                         for(let i=currentPage;i<targetPage;i++){
                             document.querySelector(".ImageViewer_imageViewer__wap0J").click();
                         }
@@ -103,16 +112,29 @@ let observer=new MutationObserver(()=>{
 
         //イベントリスナ
         document.querySelector(".PlayAddonSaveBtn").addEventListener("touchend", ()=>{
-            if(dbgMode){console.log("進み具合が保存されます。 ページ数;"+document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV").textContent+", ページ:"+document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent);
+            if(dbgMode){console.log("進み具合が保存されます。 ページ数:"+document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV").textContent+", ページ:"+document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent);
             console.log(getID(location.hash)+","+getFileName(location.hash));}
-            chrome.storage.local.set({[getID(location.hash)]:{
-                FileName:getFileName(location.hash),
-                ParentDir:getParentDir(location.hash),
-                ReadState:readState.reading,
-                PageCount:parseInt(document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent),
-                TotalPage:parseInt(document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV").textContent)
-            }});
-            if(dbgMode)chrome.storage.local.get(getID(location.hash), (e)=>{console.log(e);});
+            chrome.storage.local.get(getID(location.hash), (e)=>{
+                if(e[getID(location.hash)]!=undefined){
+                    chrome.storage.local.set({[getID(location.hash)]:[
+                        e[getID(location.hash)].concat({
+                        FileName:getFileName(location.hash),
+                        ParentDir:getParentDir(location.hash),
+                        ReadState:readState.reading,
+                        PageCount:parseInt(document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent),
+                        TotalPage:parseInt(document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV").textContent)
+                    })]});
+                }else{
+                    chrome.storage.local.set({[getID(location.hash)]:[{
+                        FileName:getFileName(location.hash),
+                        ParentDir:getParentDir(location.hash),
+                        ReadState:readState.reading,
+                        PageCount:parseInt(document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent),
+                        TotalPage:parseInt(document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV").textContent)
+                    }]});
+                }
+                if(dbgMode)chrome.storage.local.get(getID(location.hash), (e)=>{console.log(e);});
+            });
         });
     }
 });
