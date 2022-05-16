@@ -114,33 +114,52 @@ let observer=new MutationObserver(()=>{
         document.querySelector(".PlayAddonSaveBtn").addEventListener("touchend", ()=>{
             if(dbgMode){console.log("進み具合が保存されます。 ページ数:"+document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV").textContent+", ページ:"+document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent);
             console.log(getID(location.hash)+","+getFileName(location.hash));}
-            chrome.storage.local.get(getID(location.hash), (e)=>{
-                if(e[getID(location.hash)]!=undefined){
-                    chrome.storage.local.set({[getID(location.hash)]:[
-                        e[getID(location.hash)].concat({
-                        FileName:getFileName(location.hash),
-                        ParentDir:getParentDir(location.hash),
-                        ReadState:readState.reading,
-                        PageCount:parseInt(document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent),
-                        TotalPage:parseInt(document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV").textContent)
-                    })]});
-                }else{
-                    chrome.storage.local.set({[getID(location.hash)]:[{
-                        FileName:getFileName(location.hash),
-                        ParentDir:getParentDir(location.hash),
-                        ReadState:readState.reading,
-                        PageCount:parseInt(document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent),
-                        TotalPage:parseInt(document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV").textContent)
-                    }]});
-                }
-                if(dbgMode)chrome.storage.local.get(getID(location.hash), (e)=>{console.log(e);});
+            //案2による実装
+            let id=getID(location.hash);
+            chrome.storage.local.get(id, (e)=>{
+                chrome.storage.local.set(
+                    {
+                        [id]:
+                        Object.assign(e[id]==undefined?{}:e[id],
+                            {
+                                [getParentDir(location.hash)+getFileName(location.hash)]:{
+                                    readState: ReadState.reading,
+                                    page: parseInt(document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent),
+                                    totalPage:parseInt(document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV").textContent)
+                                }
+                            }
+                        )
+                    }
+                );    
             });
+
+            // chrome.storage.local.get(getID(location.hash), (e)=>{
+            //     if(e[getID(location.hash)]!=undefined){
+            //         chrome.storage.local.set({[getID(location.hash)]:[
+            //             e[getID(location.hash)].concat({
+            //             FileName:getFileName(location.hash),
+            //             ParentDir:getParentDir(location.hash),
+            //             ReadState:readState.reading,
+            //             PageCount:parseInt(document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent),
+            //             TotalPage:parseInt(document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV").textContent)
+            //         })]});
+            //     }else{
+            //         chrome.storage.local.set({[getID(location.hash)]:[{
+            //             FileName:getFileName(location.hash),
+            //             ParentDir:getParentDir(location.hash),
+            //             ReadState:readState.reading,
+            //             PageCount:parseInt(document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent),
+            //             TotalPage:parseInt(document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV").textContent)
+            //         }]});
+            //     }
+//                 if(dbgMode)chrome.storage.local.get(getID(location.hash), (e)=>{console.log(e);});
+//             });
         });
     }
 });
 observer.observe(document.querySelector("body"), {childList:true, subtree:true});
 
-let readState={
+let ReadState={
     unread:0,
     reading:1,
     readed:2
