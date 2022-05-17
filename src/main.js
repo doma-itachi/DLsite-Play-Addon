@@ -1,13 +1,7 @@
-console.log("DLsitePlayAddon,ロードされました")
-// function main(){
-//     console.log("ロードされました");
-//     let items = document.querySelectorAll(".WorkTreeList_item__uE0mx");
-//     console.log("アイテム数: "+items.length);
-//     document.querySelector("canvas").click();
-// }
-// document.addEventListener("load", main);
-let dbgMode=true;
+let dbgMode=false;
 let currentURI=location.href;
+
+if(dbgMode)console.log("DLsitePlayAddonがロードされました。デバッグモードが有効です");
 
 //監視
 let observer=new MutationObserver(()=>{
@@ -21,43 +15,24 @@ let observer=new MutationObserver(()=>{
         let jump=()=>{
             if(document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz")!=null &&
             document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV")!=null){
-                // let currentPage;
 
                 let id=getID(location.hash);
                 
-                chrome.storage.local.get(id,(e)=>{
+                chrome.storage.local.get(id, e=>{
                     if(Object.keys(e).length!=0){
-                        if(dbgMode)
-                            console.log(document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent+", "+document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV").textContent);
-
-                        currentPage=parseInt(document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent);
-                        let targetPage=1;
-                        let fileName=getFileName(location.hash);
-                        for(let i=0;i<e[id][0].length;i++){
-                            console.log(e[id][0][i].fileName+","+fileName);
-                            if(e[id][0][i].fileName==fileName){
-                                targetPage=e[id][0][i].PageCount;
-                                break;
+                        let data=e[id][getFullPath(location.hash)];
+                        if(dbgMode)console.log(data);
+                        if(data!=undefined){
+                            let currentPage=parseInt(document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent);
+                            let targetPage=data.page;
+                            for(let i=currentPage;i<targetPage;i++){
+                                document.querySelector(".ImageViewer_imageViewer__wap0J").click();
                             }
                         }
-                        
-                        for(let i=currentPage;i<targetPage;i++){
-                            document.querySelector(".ImageViewer_imageViewer__wap0J").click();
-                        }
                     }
-                })
-                
-
-                //ページ保存ボタンをDOMに埋め込む
-                // setTimeout(()=>{
-                //     console.log("実行されました");document.querySelectorAll(".ImageViewer_imageViewer__wap0J>div>div>div")[1].insertAdjacentHTML("afterend", '<div class="PlayAddonSaveBtn">進み具合を保存</div>');
-                // }, 3000);
-                // setTimeout(()=>{
-                //     // document.querySelector("body").insertAdjacentHTML("afterend", '<div class="PlayAddonSaveBtn">進み具合を保存</div>')
-                //     // console.log("実行されました");document.querySelector("body").innerHTML+=`<div class="PlayAddonSaveBtn">進み具合を保存</div>`;
-                // }, 15000);
+                });
             }
-            else {console.log("まだ");setTimeout(jump, 100);}
+            else {if(dbgMode)console.log("リーダーを待機中");setTimeout(jump, 100);}
         };
         if(nowScr==screen.view)jump();
     }
@@ -72,25 +47,35 @@ let observer=new MutationObserver(()=>{
                 else return info.slice(0,i);
             };
 
-            chrome.storage.local.get(getID(location.hash), ()=>{
+            chrome.storage.local.get(getID(location.hash), (d)=>{
                 items.forEach(e => {
                     if(e.classList.contains("modded")==false){
                         let fileName=e.querySelector(".WorkTreeList_filename__Hbpch").textContent;
                         let fileType=getFileType(e.querySelector(".WorkTreeList_info__oaT-v").textContent);
                         if(dbgMode){
-                            console.log(fileName+","+fileType);
+                            console.log(getFullPath(location.hash)+(getFullPath(location.hash)==""?"":"/")+fileName+","+fileType);
                         }
-                        if(fileType=="PDFファイル"){
 
-                            let state;
-                            let percent;
-
+                        if(fileType!="フォルダ"&&d[getID(location.hash)]!=undefined && d[getID(location.hash)][getFullPath(location.hash)+(getFullPath(location.hash)==""?"":"/")+fileName]!=undefined){
+                            let obj=d[getID(location.hash)][getFullPath(location.hash)+(getFullPath(location.hash)==""?"":"/")+fileName];
                             e.querySelector(".WorkTreeList_info__oaT-v").insertAdjacentHTML("beforebegin",`
                             <div class="addonShowState">
                                 <div class="addonReadState"><div>読書中</div></div>
-                                <div class="addonReadPercent">49%</div>
-                            </div>`);
+                                <div class="addonReadPercent">${Math.round(obj.page/obj.totalPage*100)}%</div>
+                            </div>`);    
                         }
+
+                        // if(fileType=="PDFファイル"){
+
+                        //     let state;
+                        //     let percent;
+
+                        //     e.querySelector(".WorkTreeList_info__oaT-v").insertAdjacentHTML("beforebegin",`
+                        //     <div class="addonShowState">
+                        //         <div class="addonReadState"><div>読書中</div></div>
+                        //         <div class="addonReadPercent">49%</div>
+                        //     </div>`);
+                        // }
     
                         e.classList.add("modded");
                     }
@@ -112,7 +97,7 @@ let observer=new MutationObserver(()=>{
 
         //イベントリスナ
         document.querySelector(".PlayAddonSaveBtn").addEventListener("touchend", ()=>{
-            if(dbgMode){console.log("進み具合が保存されます。 ページ数:"+document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV").textContent+", ページ:"+document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent);
+            if(dbgMode){console.log("進み具合が保存されます。 総ページ数:"+document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV").textContent+", ページ:"+document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent);
             console.log(getID(location.hash)+","+getFileName(location.hash));}
             //案2による実装
             let id=getID(location.hash);
@@ -122,7 +107,7 @@ let observer=new MutationObserver(()=>{
                         [id]:
                         Object.assign(e[id]==undefined?{}:e[id],
                             {
-                                [getParentDir(location.hash)+getFileName(location.hash)]:{
+                                [getFullPath(location.hash)]:{
                                     readState: ReadState.reading,
                                     page: parseInt(document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent),
                                     totalPage:parseInt(document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV").textContent)
@@ -171,12 +156,24 @@ let screen={
 }
 
 function getHashArr(hash){
-    hash=hash.slice(2, hash.length);
+    hash=decodeURI(hash.slice(2, hash.length));
     return hash.split("/");
 }
 function getID(hash){
     let hashArr=getHashArr(hash);
     return hashArr[1];
+}
+function getFullPath(hash){
+    //フルパスを返す
+    let hashArr=getHashArr(hash);
+    if(hashArr[3]==undefined)return "";
+    let meta=hashArr[3].split("%2F");
+    meta[meta.length-1]=meta[meta.length-1].slice(0, (meta[meta.length-1].lastIndexOf(".")<0)?undefined:meta[meta.length-1].lastIndexOf("."));
+    let fullpath="";
+    for(let i=0;i<meta.length;i++){
+        fullpath+=(i==0?"":"/")+meta[i];
+    }
+    return fullpath;
 }
 function getFileName(hash){
     let hashArr=getHashArr(hash);
