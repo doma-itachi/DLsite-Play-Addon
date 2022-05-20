@@ -1,0 +1,11 @@
+#button_delete_storage{
+    background-color: rgb(255, 113, 132);
+    color: white;
+    font-size: 25px;
+    border: none;
+    width: 90%;
+    height: 50px;
+}
+.column_content{
+    text-align: center;
+}

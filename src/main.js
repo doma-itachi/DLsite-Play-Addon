@@ -60,30 +60,16 @@ let observer=new MutationObserver(()=>{
                             let obj=d[getID(location.hash)][getFullPath(location.hash)+(getFullPath(location.hash)==""?"":"/")+fileName];
                             e.querySelector(".WorkTreeList_info__oaT-v").insertAdjacentHTML("beforebegin",`
                             <div class="addonShowState">
-                                <div class="addonReadState"><div>読書中</div></div>
+                                <div class="addonReadState"><div>${obj.page==obj.totalPage?"読了":"読書中"}</div></div>
                                 <div class="addonReadPercent">${Math.round(obj.page/obj.totalPage*100)}%</div>
                             </div>`);    
                         }
-
-                        // if(fileType=="PDFファイル"){
-
-                        //     let state;
-                        //     let percent;
-
-                        //     e.querySelector(".WorkTreeList_info__oaT-v").insertAdjacentHTML("beforebegin",`
-                        //     <div class="addonShowState">
-                        //         <div class="addonReadState"><div>読書中</div></div>
-                        //         <div class="addonReadPercent">49%</div>
-                        //     </div>`);
-                        // }
-    
                         e.classList.add("modded");
                     }
                 });
             });
         }
     }
-
 
     //メニューが開かれたらボタンを表示する
     if(getCurrentScreen(location.hash)==screen.view &&
@@ -117,28 +103,6 @@ let observer=new MutationObserver(()=>{
                     }
                 );    
             });
-
-            // chrome.storage.local.get(getID(location.hash), (e)=>{
-            //     if(e[getID(location.hash)]!=undefined){
-            //         chrome.storage.local.set({[getID(location.hash)]:[
-            //             e[getID(location.hash)].concat({
-            //             FileName:getFileName(location.hash),
-            //             ParentDir:getParentDir(location.hash),
-            //             ReadState:readState.reading,
-            //             PageCount:parseInt(document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent),
-            //             TotalPage:parseInt(document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV").textContent)
-            //         })]});
-            //     }else{
-            //         chrome.storage.local.set({[getID(location.hash)]:[{
-            //             FileName:getFileName(location.hash),
-            //             ParentDir:getParentDir(location.hash),
-            //             ReadState:readState.reading,
-            //             PageCount:parseInt(document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent),
-            //             TotalPage:parseInt(document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV").textContent)
-            //         }]});
-            //     }
-//                 if(dbgMode)chrome.storage.local.get(getID(location.hash), (e)=>{console.log(e);});
-//             });
         });
     }
 });
@@ -212,8 +176,4 @@ function getCurrentScreen(hash){
             return null;
             break;
     }
-}
-
-class StorageMgr{
-    
 }
