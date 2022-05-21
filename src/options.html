@@ -2,15 +2,41 @@
 <html>
     <head>
         <link rel="stylesheet" href="css/options.css">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
     </head>
     <body>
-        <div class="options_column">
-            
+        <header>
+            DLsitePlay Addonの設定
+        </header>
+        <div class="column">
             <div class="column_title">
-                データ
+                開発者
             </div>
             <div class="column_content">
-                <button id="button_delete_storage">進み具合をすべて削除</button>
+                <div class="setting_wrap">
+                    <div class="setting_title">デバッグモードを有効化</div>
+                    <div class="setting_description">コンソールにデバッグメッセージを出力します</div>
+                    <div class="setting_input">
+                        <input type="checkbox">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="column_title">
+                ストレージ
+            </div>
+            <div class="column_content">
+                <div class="setting_wrap">
+                    <div class="setting_title">すべての進み具合を削除</div>
+                    <div class="setting_description">このアドオンに保存されたデータを初期化します</div>
+                    <div class="setting_input">
+                        <input type="checkbox">
+                    </div>
+                </div>
             </div>
         </div>
     </body>
