@@ -15,7 +15,7 @@ let observer=new MutationObserver(()=>{
         let jump=()=>{
             if(document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz")!=null &&
             document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV")!=null){
-
+                //ページ復帰
                 let id=getID(location.hash);
                 
                 chrome.storage.local.get(id, e=>{
@@ -24,10 +24,13 @@ let observer=new MutationObserver(()=>{
                         if(dbgMode)console.log(data);
                         if(data!=undefined){
                             let currentPage=parseInt(document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent);
+                            let totalPage=parseInt(document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV").textContent);
                             let targetPage=data.page;
-                            for(let i=currentPage;i<targetPage;i++){
-                                document.querySelector(".ImageViewer_imageViewer__wap0J").click();
-                            }
+                            //読了だった場合復帰しない
+                            if(targetPage!=totalPage)
+                                for(let i=currentPage;i<targetPage;i++){
+                                    document.querySelector(".ImageViewer_imageViewer__wap0J").click();
+                                }
                         }
                     }
                 });
@@ -94,7 +97,6 @@ let observer=new MutationObserver(()=>{
                         Object.assign(e[id]==undefined?{}:e[id],
                             {
                                 [getFullPath(location.hash)]:{
-                                    readState: ReadState.reading,
                                     page: parseInt(document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent),
                                     totalPage:parseInt(document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV").textContent)
                                 }
@@ -108,11 +110,6 @@ let observer=new MutationObserver(()=>{
 });
 observer.observe(document.querySelector("body"), {childList:true, subtree:true});
 
-let ReadState={
-    unread:0,
-    reading:1,
-    readed:2
-}
 let screen={
     library:0,
     tree:1,
