@@ -63,7 +63,7 @@ let observer=new MutationObserver(()=>{
                             let obj=d[getID(location.hash)][getFullPath(location.hash)+(getFullPath(location.hash)==""?"":"/")+fileName];
                             e.querySelector(".WorkTreeList_info__oaT-v").insertAdjacentHTML("beforebegin",`
                             <div class="addonShowState">
-                                <div class="addonReadState"><div>${obj.page==obj.totalPage?"読了":"読書中"}</div></div>
+                                <div class="addonReadState" ${obj.page==obj.totalPage?"readComplete":""}><div>${obj.page==obj.totalPage?"読了":"読書中"}</div></div>
                                 <div class="addonReadPercent">${Math.round(obj.page/obj.totalPage*100)}%</div>
                             </div>`);    
                         }

@@ -1,9 +1,14 @@
+:root{
+    --main-color:#1f9aff;
+    --read-complete-color: slategray;
+}
+
 .PlayAddonSaveBtn{
     position: absolute;
     left: 10px;
     width: 200px;
     height: 40px;
-    background-color:#1f9aff;
+    background-color:var(--main-color);
     border-radius: 5px;
     padding: 6px;
     color: white;
@@ -22,14 +27,24 @@
     display: flex;
 }
 .addonReadState{
-    background-color: #007aff;
-    color: white;
+    background-color: white;
+    border: 1px solid var(--main-color);
+    min-width: 46px;
     padding: 2px;
     border-radius: 5px;
 }
+.addonReadState[readcomplete]{
+    border: 1px solid var(--read-complete-color);
+}
+.addonReadState[readcomplete]>div{
+    color: var(--read-complete-color);
+}
 .addonReadState>div{
+    text-align: center;
     line-height: 14px;
     margin: auto 0;
+    color: var(--main-color);
+    padding: 0 2px;
 }
 .addonReadPercent{
     line-height: 14px;
