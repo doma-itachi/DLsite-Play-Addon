@@ -4,6 +4,8 @@ DLsitePlayに新しい機能を追加します
 - 途中から読む(栞的な)
 - 読書進捗の表示
 
+Android版に対応しています
+
 ## 導入方法
 ### Android版
 [導入方法(Android版)](https://github.com/doma-itachi/DLsite-Play-Addon/blob/master/doc/installation-ja.md)
@@ -25,7 +27,8 @@ DLsitePlayに新しい機能を追加します
 
 ## 作者
 土間いたち @itachi_yukari  
-問題がある場合、twitterのDMまでお願いします
+問題、要望などはtwitterのDMまでお願いします  
+公開に問題があればすぐに応じます
 
 ## ライセンス
 Copyright (c) 2022 土間いたち  
