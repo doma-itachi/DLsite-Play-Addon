@@ -44,13 +44,13 @@
 
 .addonShowState{
     display: flex;
-    margin-bottom: 3px;
+    /* margin-bottom: 3px; */
 }
 .addonReadState{
     background-color: white;
     border: 1px solid var(--main-color);
     min-width: 46px;
-    padding: 2px;
+    padding: 1px 2px;
     border-radius: 5px;
 }
 .addonReadState[readcomplete]{

@@ -12,6 +12,8 @@
 
 6. DLsitePlay_Addonが有効化されていれば完了です
 
+7. 別途kiwiBrowserからDLsitePlayをホーム画面に追加（インストール）してください
+
 ## 注意
 - KiwiBrowserから開いたDLsitePlayでのみ動作します。KiwiBrowserからDLsitePlayのインストールをしてください。
 - 使い方に関しては[readme.md](https://github.com/doma-itachi/DLsite-Play-Addon/blob/master/readme.md)に表記してあります。
