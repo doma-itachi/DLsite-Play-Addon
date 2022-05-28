@@ -23,7 +23,10 @@
     ],
     "web_accessible_resources": [
         {
-            "resources": ["res/icon_AddBookmark.svg"],
+            "resources": [
+                "res/icon_AddBookmark.svg",
+                "res/icon_Bookmarks.svg"
+            ],
             "matches": ["*://play.dlsite.com/*"]
         }
     ]

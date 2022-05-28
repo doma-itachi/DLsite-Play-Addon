@@ -2,15 +2,39 @@
 <html>
     <head>
         <link rel="stylesheet" href="css/options.css">
+
         <meta name="viewport" content="width=device-width,initial-scale=1">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+        <meta charset="utf-8">
     </head>
     <body>
         <header>
-            DLsitePlay Addonの設定
+            <img src="./res/arrow_back.svg" id="button_back">
+            <div>プロジェクト名の設定</div>
         </header>
+        <div class="column">
+            <div class="column_title">
+                一般
+            </div>
+            <div class="column_content">
+                <div class="setting_wrap">
+                    <div class="setting_title">アドオンを有効化</div>
+                    <div class="setting_description">このアドオンを有効化します</div>
+                    <label class="setting_input">
+                        <input type="checkbox" id="key_isEnable">
+                    </label>
+                </div>
+                <div class="setting_wrap">
+                    <div class="setting_title">読み込み時に復帰する</div>
+                    <div class="setting_description">ビューアを開いたときに前回のページまで復帰します</div>
+                    <label class="setting_input" for="key_autoSkip">
+                        <input type="checkbox" id="key_autoSkip">
+                    </label>
+                </div>
+            </div>
+        </div>
         <div class="column">
             <div class="column_title">
                 開発者
@@ -19,9 +43,9 @@
                 <div class="setting_wrap">
                     <div class="setting_title">デバッグモードを有効化</div>
                     <div class="setting_description">コンソールにデバッグメッセージを出力します</div>
-                    <div class="setting_input">
-                        <input type="checkbox">
-                    </div>
+                    <label class="setting_input" for="key_isDebugMode">
+                        <input type="checkbox" id="key_isDebugMode">
+                    </label>
                 </div>
             </div>
         </div>
@@ -30,14 +54,9 @@
                 ストレージ
             </div>
             <div class="column_content">
-                <div class="setting_wrap">
-                    <div class="setting_title">すべての読書進捗を削除</div>
-                    <div class="setting_description">このアドオンに保存されたすべてのデータを初期化します</div>
-                    <div class="setting_input">
-                        <input type="checkbox">
-                    </div>
-                </div>
+                <div id="button_reset"><div class="button_text">アドオンに保存されたデータを初期化</div></div>
             </div>
         </div>
     </body>
+    <script src="./js/options.js"></script>
 </html>

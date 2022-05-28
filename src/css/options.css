@@ -9,6 +9,28 @@ header{
     color: white;
     padding: 10px;
     font-size: 25px;
+    display: grid;
+    height: 30px;
+    grid-template-columns: 30px 1fr;
+    margin: auto 0;
+}
+#button_reset{
+    margin: 10px auto;
+    background-color: dodgerblue;
+    width: 95%;
+    height: 40px;
+    border-radius: 2px;
+}
+
+.button_text{
+    color: white;
+    text-align: center;
+    padding: 8px;
+}
+
+header>div{
+    margin-left: 10px;
+    line-height: 29px;
 }
 .setting_wrap{
     display: grid;

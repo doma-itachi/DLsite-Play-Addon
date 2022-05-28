@@ -1,4 +1,4 @@
-let dbgMode=false;
+let dbgMode=true;
 let currentURI=location.href;
 
 if(dbgMode)console.log("DLsitePlayAddonがロードされました。デバッグモードが有効です");
@@ -84,6 +84,13 @@ let observer=new MutationObserver(()=>{
         document.querySelectorAll(".ImageViewer_imageViewer__wap0J>div>div>div")[1].insertAdjacentHTML("afterend", 
         '<div class="PlayAddonSaveBtn ImageViewerControls_bottomButtons__8YPeD"><img src="'+chrome.runtime.getURL("res/icon_AddBookmark.svg")+'"></img><div>進み具合を保存</div></div>');
 
+        //しおりボタンを挿入
+        // document.querySelector(".Header_headerInner__8f7wn").insertAdjacentHTML("beforeend", 
+        // `<div class="PlayAddonBookmarksWrap">
+        //     <img class="PlayAddonBookmarksIcon" src="${chrome.runtime.getURL("res/icon_Bookmarks.svg")}"></img>
+        //     <div class="PlayAddonBookmarksText">しおり</div>
+        // </div>`);
+
         //イベントリスナ
         document.querySelector(".PlayAddonSaveBtn").addEventListener("touchend", ()=>{
             if(dbgMode){console.log("進み具合が保存されます。 総ページ数:"+document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV").textContent+", ページ:"+document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent);
@@ -103,9 +110,29 @@ let observer=new MutationObserver(()=>{
                             }
                         )
                     }
-                );    
+                );
+                
+                //アニメーション
+                document.querySelector(".PlayAddonSaveBtn").animate(
+                    [{backgroundColor:"#70bcfa"},{backgroundColor:"#1f9aff"}],
+                    {duration:500, easing:"ease"}
+                );
             });
         });
+        //しおりイベントリスナ
+        // document.querySelector(".PlayAddonBookmarksWrap").addEventListener("touchend", ()=>{
+        //     if(document.querySelector(".PlayAddonMarkListWrap")==undefined){
+        //         document.querySelector("body").insertAdjacentHTML("beforeend",
+        //         `<div class="PlayAddonMarkListWrap">
+        //             <div class="PlayAddonMarkListBox">
+        //                 <div class="PlayAddonHeader">
+        //                 </div>
+        //                 <div class="PlayAddonMarkListContent">
+        //                 </div>
+        //             </div>
+        //         </div>`);
+        //     }
+        // });
     }
 });
 observer.observe(document.querySelector("body"), {childList:true, subtree:true});
@@ -130,10 +157,12 @@ function getFullPath(hash){
     if(hashArr[3]==undefined)return "";
     let meta=hashArr[3].split("%2F");
     meta[meta.length-1]=meta[meta.length-1].slice(0, (meta[meta.length-1].lastIndexOf(".")<0)?undefined:meta[meta.length-1].lastIndexOf("."));
+    console.log(meta);
     let fullpath="";
     for(let i=0;i<meta.length;i++){
         fullpath+=(i==0?"":"/")+meta[i];
     }
+    if(fullpath.charAt(0)=="/")fullpath=fullpath.slice(1);
     return fullpath;
 }
 function getFileName(hash){
