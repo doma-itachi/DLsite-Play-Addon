@@ -118,3 +118,21 @@
 .color_danger{
     color: #d40000;
 }
+
+.addon_version_wrap{
+    list-style: none;
+    position: absolute;
+    bottom: 0;
+    padding: 4px;
+    width: 100%;
+}
+.addon_version_wrap>div{
+    display: inline;
+}
+#addon_Text{
+    font-size: 18px;
+    color: #454545;
+}
+#addon_version{
+    color: #808080;
+}

@@ -1,4 +1,4 @@
-let dbgMode=true;
+let dbgMode=false;
 let currentURI=location.href;
 
 if(dbgMode)console.log("DLsitePlayAddonがロードされました。デバッグモードが有効です");
@@ -202,6 +202,18 @@ let observer=new MutationObserver(()=>{
         //     }
         // });
     }
+
+    //メニューにバージョンを表示
+    if(document.querySelector(".Menu_nav__jFWZt")!=null &&
+        document.querySelector(".addon_version_wrap")==null){
+            console.log("挿入されました");
+            document.querySelector(".Menu_nav__jFWZt").insertAdjacentHTML("beforeend", `
+                <li class="addon_version_wrap">
+                    <div id="addon_Text">DLsitePlay-Addon</div>
+                    <div id="addon_version">v${chrome.runtime.getManifest().version}</div>
+                </li>
+            `);
+        }
 });
 observer.observe(document.querySelector("body"), {childList:true, subtree:true});
 
@@ -274,8 +286,4 @@ function getCurrentScreen(hash){
             return null;
             break;
     }
-}
-
-function saveDataFile(){
-
 }
