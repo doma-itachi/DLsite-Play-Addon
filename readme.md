@@ -1,6 +1,6 @@
 # DLsitePlay_Addon
 ## 概要
-DLsitePlayに新しい機能を追加します
+DLsitePlayに新しい機能を追加するアドオンです。
 - 途中から読む(栞的な)
 - 読書進捗の表示
 
@@ -9,9 +9,6 @@ Androidに対応しています
 ## 導入方法
 ### Android版
 [導入方法(Android版)](https://github.com/doma-itachi/DLsite-Play-Addon/blob/master/doc/installation-ja.md)
-
-### iPhone版
-Macを持っていないため実装できません
 
 ## 使い方
 ### 読書進捗を保存する
