@@ -206,7 +206,7 @@ let observer=new MutationObserver(()=>{
     //メニューにバージョンを表示
     if(document.querySelector(".Menu_nav__jFWZt")!=null &&
         document.querySelector(".addon_version_wrap")==null){
-            console.log("挿入されました");
+            if(dbgMode)console.log("挿入されました");
             document.querySelector(".Menu_nav__jFWZt").insertAdjacentHTML("beforeend", `
                 <li class="addon_version_wrap">
                     <div id="addon_Text">DLsitePlay-Addon</div>
