@@ -89,3 +89,32 @@
     display: grid;
     grid-template-rows: 50px 1fr;
 }
+.PlayAddonSettingsWrap>h2{
+    font-size: 14px;
+    color: #666666;
+    margin-bottom: 7px;
+    padding: 0 12px;
+}
+.settings_wrap{
+    background-color: white;
+}
+.settings_li>button{
+    width: 100%;
+    height: 50px;
+}
+.settings_li>button:active{
+    background-color: #e0f9ff;
+}
+.settings_li{
+    border-top: 1px solid #d5d5d5;
+}
+.settings_li:last-child{
+    border-bottom: 1px solid #d5d5d5;
+}
+.settings_li>button>p{
+    font-size: 16px;
+    text-align: center;
+}
+.color_danger{
+    color: #d40000;
+}

@@ -74,6 +74,74 @@ let observer=new MutationObserver(()=>{
         }
     }
 
+    //設定画面に追加
+    if(getCurrentScreen(location.hash)==screen.settings &&
+        document.querySelectorAll(".Settings_settings__xXGg8").length==4 &&
+        document.querySelector(".PlayAddonSettingsWrap")==null){
+            if(dbgMode)console.log("要素を挿入しました");
+            document.querySelector(".Settings_wrapper__Em-H6").insertAdjacentHTML("beforeend", `
+            <section class="PlayAddonSettingsWrap">
+                <h2>アドオン</h2>
+                <ol class="settings_wrap">
+                    <li class="settings_li">
+                        <button id="addonSaveToFile">
+                            <p>読書進捗をファイルに保存</p>
+                        </button>
+                    </li>
+                    <li class="settings_li">
+                        <button id="addonLoadFromFile">
+                            <p>ファイルから読書進捗を復元</p>
+                        </button>
+                    </li>
+                    <li class="settings_li color_danger">
+                        <button id="addonClearData">
+                            <p>アドオンのデータを初期化</p>
+                        </button>
+                    </li>
+                </ol>
+            </section>
+            `);
+            document.querySelector("#addonSaveToFile").addEventListener("click", ()=>{
+                chrome.storage.local.get(null, (e)=>{
+                    let json=JSON.stringify(e, null, "  ");
+                    const blob=new Blob([json], {type:"application/json"});
+                    let dummy_a=document.createElement("a");
+                    document.body.appendChild(dummy_a);
+                    dummy_a.href=window.URL.createObjectURL(blob);
+                    dummy_a.download="DLsitePlay_Data.json";
+                    dummy_a.click();
+                    document.body.removeChild(dummy_a);
+                });
+            });
+
+            document.querySelector("#addonLoadFromFile").addEventListener("click", ()=>{
+                let dummy_input=document.createElement("input");
+                dummy_input.style.display="none";
+                dummy_input.type="file";
+                dummy_input.accept="application/json";
+                dummy_input.click();
+                dummy_input.addEventListener("change", ()=>{
+                    chrome.storage.local.get(null, (e)=>{console.log(e);});
+                    const reader=new FileReader();
+                    reader.onload=(e)=>{
+                        if(dbgMode)console.log("復元開始");
+                        chrome.storage.local.clear();
+                        chrome.storage.local.set(JSON.parse(e.target.result));
+                        dummy_input.style.display="block";
+                        dummy_input.remove();
+                        chrome.storage.local.get(null, (e)=>{console.log(e);});
+                    }
+                    reader.readAsText(dummy_input.files[0]);
+                });
+            });
+
+            document.querySelector("#addonClearData").addEventListener("click", ()=>{
+                if(window.confirm("本当にアドオンのデータを初期化しますか？（読書進捗がリセットされます）")==true){
+                    chrome.storage.local.clear();
+                }
+            });
+        }
+
     //メニューが開かれたらボタンを表示する
     if(getCurrentScreen(location.hash)==screen.view &&
         document.querySelector(".ImageViewer_imageViewer__wap0J>div>div")!=null &&
@@ -140,7 +208,8 @@ observer.observe(document.querySelector("body"), {childList:true, subtree:true})
 let screen={
     library:0,
     tree:1,
-    view:2
+    view:2,
+    settings:3
 }
 
 function getHashArr(hash){
@@ -198,8 +267,15 @@ function getCurrentScreen(hash){
                     break;
             }
             break;
+        case "settings":
+            return screen.settings;
+            break;
         default:
             return null;
             break;
     }
+}
+
+function saveDataFile(){
+
 }
