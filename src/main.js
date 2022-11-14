@@ -1,5 +1,29 @@
+class hashedClassManager{
+    constructor(){
+        this.searchQuery="div";
+        this.classList={};
+    }
+
+    get(className){
+        if(this.classList[className]==undefined)this.search(className);
+        return this.classList[className];
+        //なかった場合探索する
+        //あったらそのまま値を返す
+    }
+    
+    //クラス名からハッシュが付与されたクラス名を探索する
+    search(className){
+        document.querySelectorAll(this.searchQuery).forEach(e=>{
+            if(e.className.indexOf(className)!=-1)this.classList[className]=e.className;
+            return;
+        });
+        throw `Cant search ${className}`;
+    }
+}
+
 let dbgMode=false;
 let currentURI=location.href;
+let classMgr=new hashedClassManager();
 
 if(dbgMode)console.log("DLsitePlayAddonがロードされました。デバッグモードが有効です");
 
@@ -13,8 +37,8 @@ let observer=new MutationObserver(()=>{
 
         //view画面
         let jump=()=>{
-            if(document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz")!=null &&
-            document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV")!=null){
+            if(document.querySelector(`.${classMgr.get("ImageViewerPageCounter_currentPage")}`)!=null &&
+            document.querySelector(`.${classMgr.get("ImageViewerPageCounter_totalPage")}`)!=null){
                 //ページ復帰
                 let id=getID(location.hash);
                 
@@ -23,13 +47,13 @@ let observer=new MutationObserver(()=>{
                         let data=e[id][getFullPath(location.hash)];
                         if(dbgMode)console.log(data);
                         if(data!=undefined){
-                            let currentPage=parseInt(document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent);
-                            let totalPage=parseInt(document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV").textContent);
+                            let currentPage=parseInt(document.querySelector(`.${classMgr.get("ImageViewerPageCounter_currentPage")}`).textContent);
+                            let totalPage=parseInt(document.querySelector(`.${classMgr.get("ImageViewerPageCounter_totalPage")}`).textContent);
                             let targetPage=data.page;
                             //読了だった場合復帰しない
                             if(targetPage!=totalPage)
                                 for(let i=currentPage;i<targetPage;i++){
-                                    document.querySelector(".ImageViewer_imageViewer__wap0J").click();
+                                    document.querySelector(`.${classMgr.get("ImageViewer_imageViewer")}`).click();
                                 }
                         }
                     }
@@ -42,7 +66,7 @@ let observer=new MutationObserver(()=>{
 
     //tree画面
     if(getCurrentScreen(location.hash)){
-        let items=document.querySelectorAll(".WorkTreeList_tree__SAoFl>li");
+        let items=document.querySelectorAll(`.${classMgr.get("WorkTreeList_tree")}>li`);
         if(items.length!=0){
             let getFileType=(info)=>{
                 let i=info.indexOf(" - ");
@@ -53,15 +77,15 @@ let observer=new MutationObserver(()=>{
             chrome.storage.local.get(getID(location.hash), (d)=>{
                 items.forEach(e => {
                     if(e.classList.contains("modded")==false){
-                        let fileName=e.querySelector(".WorkTreeList_filename__Hbpch").textContent;
-                        let fileType=getFileType(e.querySelector(".WorkTreeList_info__oaT-v").textContent);
+                        let fileName=e.querySelector(`.${classMgr.get("WorkTreeList_filename")}`).textContent;
+                        let fileType=getFileType(e.querySelector(`.${classMgr.get("WorkTreeList_info")}`).textContent);
                         if(dbgMode){
                             console.log(getFullPath(location.hash)+(getFullPath(location.hash)==""?"":"/")+fileName+","+fileType);
                         }
 
                         if(fileType!="フォルダ"&&d[getID(location.hash)]!=undefined && d[getID(location.hash)][getFullPath(location.hash)+(getFullPath(location.hash)==""?"":"/")+fileName]!=undefined){
                             let obj=d[getID(location.hash)][getFullPath(location.hash)+(getFullPath(location.hash)==""?"":"/")+fileName];
-                            e.querySelector(".WorkTreeList_info__oaT-v").insertAdjacentHTML("beforebegin",`
+                            e.querySelector(`.${classMgr.get("WorkTreeList_info")}`).insertAdjacentHTML("beforebegin",`
                             <div class="addonShowState">
                                 <div class="addonReadState" ${obj.page==obj.totalPage?"readComplete":""}><div>${obj.page==obj.totalPage?"読了":"読書中"}</div></div>
                                 <div class="addonReadPercent">${Math.round(obj.page/obj.totalPage*100)}%</div>
@@ -76,10 +100,10 @@ let observer=new MutationObserver(()=>{
 
     //設定画面に追加
     if(getCurrentScreen(location.hash)==screen.settings &&
-        document.querySelectorAll(".Settings_settings__xXGg8").length==4 &&
+        document.querySelectorAll(`.${classMgr.get("Settings_settings")}`).length==4 &&
         document.querySelector(".PlayAddonSettingsWrap")==null){
             if(dbgMode)console.log("要素を挿入しました");
-            document.querySelector(".Settings_wrapper__Em-H6").insertAdjacentHTML("beforeend", `
+            document.querySelector(`.${classMgr.get("Settings_wrapper")}`).insertAdjacentHTML("beforeend", `
             <section class="PlayAddonSettingsWrap">
                 <h2>アドオン</h2>
                 <ol class="settings_wrap">
@@ -144,13 +168,13 @@ let observer=new MutationObserver(()=>{
 
     //メニューが開かれたらボタンを表示する
     if(getCurrentScreen(location.hash)==screen.view &&
-        document.querySelector(".ImageViewer_imageViewer__wap0J>div>div")!=null &&
-        document.querySelector(".ImageViewer_imageViewer__wap0J>div>div").childNodes.length!=0&&
+        document.querySelector(`.${classMgr.get("ImageViewer_imageViewer")}>div>div`)!=null &&
+        document.querySelector(`.${classMgr.get("ImageViewer_imageViewer")}>div>div`).childNodes.length!=0&&
         document.querySelector(".PlayAddonSaveBtn")==null){
             
         if(dbgMode)console.log("メニューが開かれました");
-        document.querySelectorAll(".ImageViewer_imageViewer__wap0J>div>div>div")[1].insertAdjacentHTML("afterend", 
-        '<div class="PlayAddonSaveBtn ImageViewerControls_bottomButtons__8YPeD"><img src="'+chrome.runtime.getURL("res/icon_AddBookmark.svg")+'"></img><div>進み具合を保存</div></div>');
+        document.querySelectorAll(`.${classMgr.get("ImageViewer_imageViewer")}>div>div>div`)[1].insertAdjacentHTML("afterend", 
+        `<div class="PlayAddonSaveBtn ${classMgr.get("ImageViewerControls_bottomButtons")}"><img src="`+chrome.runtime.getURL("res/icon_AddBookmark.svg")+'"></img><div>進み具合を保存</div></div>');
 
         //しおりボタンを挿入
         // document.querySelector(".Header_headerInner__8f7wn").insertAdjacentHTML("beforeend", 
@@ -161,7 +185,7 @@ let observer=new MutationObserver(()=>{
 
         //イベントリスナ
         document.querySelector(".PlayAddonSaveBtn").addEventListener("touchend", ()=>{
-            if(dbgMode){console.log("進み具合が保存されます。 総ページ数:"+document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV").textContent+", ページ:"+document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent);
+            if(dbgMode){console.log("進み具合が保存されます。 総ページ数:"+document.querySelector(`.${classMgr.get("ImageViewerPageCounter_totalPage")}`).textContent+", ページ:"+document.querySelector(`.${classMgr.get("ImageViewerPageCounter_currentPage")}`).textContent);
             console.log(getID(location.hash)+","+getFileName(location.hash));}
             //案2による実装
             let id=getID(location.hash);
@@ -172,8 +196,8 @@ let observer=new MutationObserver(()=>{
                         Object.assign(e[id]==undefined?{}:e[id],
                             {
                                 [getFullPath(location.hash)]:{
-                                    page: parseInt(document.querySelector(".ImageViewerPageCounter_currentPage__W7WEz").textContent),
-                                    totalPage:parseInt(document.querySelector(".ImageViewerPageCounter_totalPage__pBHGV").textContent)
+                                    page: parseInt(document.querySelector(`.${classMgr.get("ImageViewerPageCounter_currentPage")}`).textContent),
+                                    totalPage:parseInt(document.querySelector(`.${classMgr.get("ImageViewerPageCounter_totalPage")}`).textContent)
                                 }
                             }
                         )
@@ -204,10 +228,11 @@ let observer=new MutationObserver(()=>{
     }
 
     //メニューにバージョンを表示
-    if(document.querySelector(".Menu_nav__jFWZt")!=null &&
-        document.querySelector(".addon_version_wrap")==null){
+    if(document.querySelector(`.${classMgr.get("Menu_nav")}`)!=null &&
+        document.querySelector(".addon_version_wrap")==null &&
+        200<document.querySelector(`.${classMgr.get("Menu_nav")}`).clientWidth){
             if(dbgMode)console.log("挿入されました");
-            document.querySelector(".Menu_nav__jFWZt").insertAdjacentHTML("beforeend", `
+            document.querySelector(`.${classMgr.get("Menu_nav")}`).insertAdjacentHTML("beforeend", `
                 <li class="addon_version_wrap">
                     <div id="addon_Text">DLsitePlay-Addon</div>
                     <div id="addon_version">v${chrome.runtime.getManifest().version}</div>
