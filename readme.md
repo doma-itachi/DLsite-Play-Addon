@@ -1,4 +1,5 @@
 # DLsitePlay_Addon
+## このリポジトリは[別リポジトリ](https://github.com/doma-itachi/DLsitePlay-Addon)に移されました
 ## 概要
 DLsitePlayに新しい機能を追加するアドオンです。
 - 途中から読む(栞的な)
